@@ -69,6 +69,7 @@ class WLLDriver(weewx.drivers.AbstractDevice):
     def __init__(self, **stn_dict):
         self.wllIP = stn_dict['wllIP']
         self.stationData = None
+        self.rain_previous_period = None
 
         if self.wllIP == None:
             logerr("WeatherLink Live IP address Not Entered")
@@ -115,7 +116,16 @@ class WLLDriver(weewx.drivers.AbstractDevice):
                 rainmultiplier = 0.001
             
             rainrate = self.stationData[0]["rain_rate_last"]*rainmultiplier
-#            rainday = self.stationData[0]["rainfall_daily"]*rainmultiplier
+            
+            #check to see if we're just starting so we can setup our rain calculations properly
+            if self.rain_previous_period is Not None:
+               # do the calculation to compare rain now, with rain previous and use the difference in the loop packet
+               rain_this_period = (self.stationData[0]["rainfall_daily"]-self.rain_previous_period)*rainmultiplier
+            else:
+               rain_this_period = 0
+
+            #set the rain now so we can compare next loop
+            self.rain_previous_period = self.stationData[0]["rainfall_daily"]
             
             self.observations = {
                 'outTemp' : self.stationData[0]["temp"],
@@ -130,7 +140,7 @@ class WLLDriver(weewx.drivers.AbstractDevice):
                 'windGustDir': self.stationData[0]["wind_dir_scalar_avg_last_10_min"],
                 'outHumidity': self.stationData[0]["hum"],
                 'inHumidity' : self.stationData[1]["hum_in"],
-#                'rain' : rainday,
+                'rain' : rain_this_period,
                 'rainRate' : rainrate,
                 'dewpoint' : self.stationData[0]["dew_point"],
                 'windchill' : self.stationData[0]["wind_chill"],
