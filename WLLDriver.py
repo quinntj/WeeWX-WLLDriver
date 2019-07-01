@@ -70,7 +70,7 @@ class WLLDriver(weewx.drivers.AbstractDevice):
         self.wllIP = stn_dict['wllIP']
         self.stationData = None
         self.rain_previous_period = None
-
+        
         if self.wllIP == None:
             logerr("WeatherLink Live IP address Not Entered")
             exit()
@@ -106,6 +106,9 @@ class WLLDriver(weewx.drivers.AbstractDevice):
             # Rain Calculations
             # rain collector type/size **(0: Reserved, 1: 0.01", 2: 0.2 mm, 3:  0.1 mm, 4: 0.001")**
             
+            rainmultiplier = 0.01 #set default rain spoon capacity in case of issue with station info
+            rain_this_period = 0 #set rain this period to 0 in case of issue with station info
+            
             if self.stationData[0]["rain_size"] == 1:
                 rainmultiplier = 0.01
             elif self.stationData[0]["rain_size"] == 2:
@@ -114,6 +117,7 @@ class WLLDriver(weewx.drivers.AbstractDevice):
                 rainmultiplier = 0.1
             elif self.stationData[0]["rain_size"] == 4:
                 rainmultiplier = 0.001
+
             
             rainrate = self.stationData[0]["rain_rate_last"]*rainmultiplier
             
