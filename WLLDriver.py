@@ -122,6 +122,7 @@ class WLLDriver(weewx.drivers.AbstractDevice):
                # do the calculation to compare rain now, with rain previous and use the difference in the loop packet
                rain_this_period = (self.stationData[0]["rainfall_daily"]-self.rain_previous_period)*rainmultiplier
             else:
+               #not sure how else to handle this, if we don't have anything to compare to, we have to assume 0
                rain_this_period = 0
 
             #set the rain now so we can compare next loop
