@@ -139,7 +139,7 @@ class WLLDriver(weewx.drivers.AbstractDevice):
             logdbg("Set Previous period rain to: " + str(self.rain_previous_period))
             
             self.observations = {
-                'dateTime' : self.stationTimestampEpoch;
+                'dateTime' : self.stationTimestampEpoch,
                 'outTemp' : self.stationData[0]["temp"],
                 'heatindex' : self.stationData[0]["heat_index"],
                 'windchill' : self.stationData[0]["wind_chill"],
