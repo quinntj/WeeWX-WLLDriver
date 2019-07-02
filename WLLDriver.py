@@ -131,8 +131,8 @@ class WLLDriver(weewx.drivers.AbstractDevice):
                logdbg("Rain this period: " + str(rain_this_period))
             else:
                #not sure how else to handle this, if we don't have anything to compare to, we have to assume 0
-               rain_this_period = 0
-               logdbg("Rain set to 0 since we are starting up fresh")
+               rain_this_period = self.stationData[0]["rainfall_daily"]
+               logdbg("Fresh driver load rain set to station daily rain amount: "+ str(self.stationData[0]["rainfall_daily"]))
 
             #set the rain now so we can compare next loop
             self.rain_previous_period = self.stationData[0]["rainfall_daily"]
