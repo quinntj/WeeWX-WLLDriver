@@ -101,6 +101,8 @@ class WLLDriver(weewx.drivers.AbstractDevice):
             exit()
         else:
             self.stationData = json_data['data']['conditions']
+            self.stationTimestampEpoch = json_data['data']['ts']
+            logdbg(self.stationTimestampEpoch)
             logdbg(self.stationData)
             
             # Rain Calculations
@@ -120,19 +122,24 @@ class WLLDriver(weewx.drivers.AbstractDevice):
 
             
             rainrate = self.stationData[0]["rain_rate_last"]*rainmultiplier
+            logdbg("Rain Rate: " + str(rainrate))
             
             #check to see if we're just starting so we can setup our rain calculations properly
             if self.rain_previous_period is not None:
                # do the calculation to compare rain now, with rain previous and use the difference in the loop packet
                rain_this_period = (self.stationData[0]["rainfall_daily"]-self.rain_previous_period)*rainmultiplier
+               logdbg("Rain this period: " + str(rain_this_period))
             else:
                #not sure how else to handle this, if we don't have anything to compare to, we have to assume 0
                rain_this_period = 0
+               logdbg("Rain set to 0 since we are starting up fresh")
 
             #set the rain now so we can compare next loop
             self.rain_previous_period = self.stationData[0]["rainfall_daily"]
+            logdbg("Set Previous period rain to: " + str(self.rain_previous_period))
             
             self.observations = {
+                'dateTime' : self.stationTimestampEpoch;
                 'outTemp' : self.stationData[0]["temp"],
                 'heatindex' : self.stationData[0]["heat_index"],
                 'windchill' : self.stationData[0]["wind_chill"],
